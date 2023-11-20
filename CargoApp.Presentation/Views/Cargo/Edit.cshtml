@@ -1,0 +1,91 @@
+@model CargoApp.Application.DTOs.CargoDto
+@using CargoApp.Domain.Entities
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Редактировать заявку</h2>
+
+<form method="post" asp-action="Edit">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id"/>
+
+    <div class="form-group">
+        <label asp-for="PickupLocation" class="control-label"></label>
+        <input asp-for="PickupLocation" class="form-control" disabled="@(Model.Status != CargoStatus.New)"/>
+        <span asp-validation-for="PickupLocation" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DeliveryLocation" class="control-label"></label>
+        <input asp-for="DeliveryLocation" class="form-control" disabled="@(Model.Status != CargoStatus.New)"/>
+        <span asp-validation-for="DeliveryLocation" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PickupDateTime" class="control-label"></label>
+        <input asp-for="PickupDateTime" class="form-control" disabled="@(Model.Status != CargoStatus.New)"/>
+        <span asp-validation-for="PickupDateTime" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Status" class="control-label"></label>
+        <select asp-for="Status" class="form-control">
+            <option value="New">Новая</option>
+            <option value="InTransit">Передана на выполнение</option>
+            <option value="Delivered">Доставлена</option>
+            <option value="Canceled">Отменена</option>
+        </select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CancellationReason" class="control-label"></label>
+        <textarea asp-for="CancellationReason" class="form-control" disabled="true" placeholder="select the Canceled status for editing"></textarea>
+        <span asp-validation-for="CancellationReason" class="text-danger"></span>
+    </div>
+
+    <div class="form-group flex-row" style="display: flex; padding: 10px; gap: 10px; margin-top: 20px">
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a asp-action="Index" class="btn btn-secondary">Отменить</a>
+
+    </div>
+</form>
+<form method="post" asp-action="Approve" asp-route-id="@Model.Id" style="padding-left: 10px">
+    <button type="submit" class="btn btn-info">
+        Передать на выполнение
+    </button>
+</form>
+
+@section Scripts
+{
+    <script>
+    $('textarea').each(function () {
+      this.setAttribute('style', 'height:' + (this.scrollHeight) + 'px;overflow-y:hidden;');
+    }).on('input', function () {
+      this.style.height = 'auto';
+      this.style.height = (this.scrollHeight) + 'px';
+    });
+    
+    $(document).ready(function () {
+        checkStatus();
+
+        $("#Status").change(function () {
+            checkStatus();
+        });
+
+        function checkStatus() {
+            let selectedStatus = $("#Status").val();
+            let cancellationReasonInput = $("#CancellationReason");
+
+            if (selectedStatus === "Canceled") {
+                cancellationReasonInput.prop("disabled", false);
+            } else {
+                cancellationReasonInput.prop("disabled", true);
+                cancellationReasonInput.val("");
+            }
+        }
+    });
+    </script>
+}

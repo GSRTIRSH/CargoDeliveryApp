@@ -1,0 +1,131 @@
+@using CargoApp.Domain.Entities
+@model System.Collections.Generic.IEnumerable<CargoApp.Application.DTOs.CargoDto>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<h2>Таблица доставок</h2>
+<div style="display: flex; flex-direction: column; height: max-content; background-color: #FAFAFA; margin-bottom: 70px; border-radius: 5px">
+    <form asp-action="Search" method="get">
+        <div class="flex-row" style="display: flex; padding: 10px; gap: 10px">
+            <input type="text"
+                   name="searchText"
+                   placeholder="Search..."
+                   class="form-control"
+                   style="flex-grow: 1; margin-right: 5px;"
+                   value="@ViewBag.SearchText"/>
+            <select name="caseSensitive" class="form-control" style="width: 200px;">
+                <option value="true" selected="@(ViewBag.SearchOption ?? true)">Учитывать регистр</option>
+                <option value="false" selected="@(!(ViewBag.SearchOption ?? true))">Не учитывать регистр</option>
+            </select>
+            <button type="submit" class="btn btn-dark">Найти</button>
+        </div>
+    </form>
+
+    <div style="flex: 1 1 auto; overflow-y: auto; padding: 10px;">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Id)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PickupLocation)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DeliveryLocation)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PickupDateTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Status)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CancellationReason)
+                </th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var cargo in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.Raw(HighlightText(cargo.Id.ToString(), ViewBag.SearchText))
+                    </td>
+                    <td>
+                        @Html.Raw(HighlightText(cargo.PickupLocation, ViewBag.SearchText))
+                    </td>
+                    <td>
+                        @Html.Raw(HighlightText(cargo.DeliveryLocation, ViewBag.SearchText))
+                    </td>
+                    <td>
+                        @Html.Raw(HighlightText(cargo.PickupDateTime.ToString("yyyy-MM-dd HH:mm"), ViewBag.SearchText))
+                    </td>
+                    <td>
+                        @{
+                            var status = cargo.Status switch
+                            {
+                                CargoStatus.New => "text-bg-primary",
+                                CargoStatus.InTransit => "text-bg-info",
+                                CargoStatus.Delivered => "text-bg-success",
+                                CargoStatus.Canceled => "text-bg-danger",
+                                };
+                        }
+                        <span class="badge @status">
+                            @Html.Raw(HighlightText(cargo.Status.GetName(), ViewBag.SearchText))
+                        </span>
+                    </td>
+                    <td>
+                        @Html.Raw(HighlightText(cargo.CancellationReason, ViewBag.SearchText))
+                    </td>
+                    <td>
+                        <div class="flex-row" style="display: flex; padding: 10px; gap: 10px">
+                            <a asp-action="Edit" asp-route-id="@cargo.Id" type="button" class="btn btn-primary">
+                                <i class="bi bi-pencil-fill"></i>
+                            </a>
+                            <form method="post" asp-action="Delete" asp-route-id="@cargo.Id">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    <div style="flex: 0 0 auto; padding: 10px; display: flex; justify-content: flex-end;">
+        <a asp-action="Create" class="btn btn-dark">Создать заявку</a>
+    </div>
+</div>
+
+@functions {
+
+    private string HighlightText(string text, string searchText)
+    {
+        var comparison = ViewBag.SearchOption ?? true
+            ? StringComparison.InvariantCulture
+            : StringComparison.InvariantCultureIgnoreCase;
+
+        if (!string.IsNullOrEmpty(searchText))
+        {
+            var index = text.IndexOf(searchText, comparison);
+            if (index >= 0)
+            {
+                var before = text.Substring(0, index);
+                var highlighted = text.Substring(index, searchText.Length);
+                var after = text.Substring(index + searchText.Length);
+
+                return $"{before}<mark style=\"padding: .1875em .0875em\">{highlighted}</mark>{after}";
+            }
+        }
+        return text;
+    }
+
+}

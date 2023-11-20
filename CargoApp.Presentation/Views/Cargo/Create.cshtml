@@ -1,0 +1,75 @@
+@model CargoApp.Application.DTOs.CargoDto
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Создать заявку</h2>
+
+<form method="post" asp-action="Create">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="PickupLocation" class="control-label"></label>
+        <input asp-for="PickupLocation" class="form-control"/>
+        <span asp-validation-for="PickupLocation" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DeliveryLocation" class="control-label"></label>
+        <input asp-for="DeliveryLocation" class="form-control"/>
+        <span asp-validation-for="DeliveryLocation" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PickupDateTime" class="control-label"></label>
+        <input asp-for="PickupDateTime" class="form-control"/>
+        <span asp-validation-for="PickupDateTime" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Status" class="control-label"></label>
+        <select asp-for="Status" class="form-control">
+            <option value="New">Новая</option>
+            <option value="InTransit">Передана на выполнение</option>
+            <option value="Delivered">Доставлена</option>
+            <option value="Canceled">Отменена</option>
+        </select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CancellationReason" class="control-label"></label>
+        <input asp-for="CancellationReason" class="form-control" placeholder="select the Canceled status for editing"/>
+        <span asp-validation-for="CancellationReason" class="text-danger"></span>
+    </div>
+
+    <div class="form-group" style="margin-top: 20px;">
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a asp-action="Index" class="btn btn-secondary">Назад</a>
+    </div>
+</form>
+
+@section Scripts
+{
+    <script>
+    $(document).ready(function () {
+        checkStatus();
+
+        $("#Status").change(function () {
+            checkStatus();
+        });
+
+        function checkStatus() {
+            let selectedStatus = $("#Status").val();
+            let cancellationReasonInput = $("#CancellationReason");
+
+            if (selectedStatus === "Canceled") {
+                cancellationReasonInput.prop("disabled", false);
+            } else {
+                cancellationReasonInput.prop("disabled", true);
+                cancellationReasonInput.val("");
+            }
+        }
+    });
+    </script>
+}

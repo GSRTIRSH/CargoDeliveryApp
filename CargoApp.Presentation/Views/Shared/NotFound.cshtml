@@ -1,0 +1,13 @@
+@page
+@model ErrorViewModel
+@{
+    //ViewData["Title"] = "Not Found";
+    Layout = "_Layout"; // Указываете на ваш макет
+}
+
+<div class="container">
+    <h1 class="text-danger">Error 404</h1>
+    <h2 class="text-danger">Not found.</h2>
+    <p>The requested page could not be found. Please check the URL and try again.</p>
+    <a asp-action="Index" asp-controller="Home">Back to Home</a>
+</div>
