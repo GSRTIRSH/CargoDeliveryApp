@@ -39,7 +39,7 @@ git clone https://github.com/GSRTIRSH/CargoDeliveryApp.git
 Перейдите в папку проекта:
 
 ```bash
-cd CargoApp
+cd CargoDeliveryApp
 ```
 
 ## Запуск приложения:
