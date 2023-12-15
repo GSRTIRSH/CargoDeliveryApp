@@ -18,7 +18,7 @@ public class CargoController : Controller
     {
         return View("NotFound");
     }
-    
+
     public async Task<IActionResult> Index()
     {
         var cargoRequests = await _cargoService.GetCargoRequestsAsync();
@@ -48,38 +48,38 @@ public class CargoController : Controller
     }
 
     [HttpPost]
-    public IActionResult Create(CargoDto cargo)
+    public async Task<IActionResult> Create(CargoDto cargo)
     {
         if (!ModelState.IsValid) return View(cargo);
 
-        _cargoService.CreateCargoRequest(cargo).Wait();
+        await _cargoService.CreateCargoRequest(cargo);
         return RedirectToAction("Index");
     }
 
     [HttpPost]
-    public IActionResult Edit(CargoDto cargo)
+    public async Task<IActionResult> Edit(CargoDto cargo)
     {
         // валидируем все поля, если заявка новая
         if (cargo.Status == CargoStatus.New)
         {
             if (!ModelState.IsValid) return View(cargo);
         }
-        
-        _cargoService.EditCargoRequest(cargo).Wait();
+
+        await _cargoService.EditCargoRequest(cargo);
         return RedirectToAction("Index");
     }
 
     [HttpPost]
-    public IActionResult Approve(int id)
+    public async Task<IActionResult> Approve(int id)
     {
-        _cargoService.TransitCargoRequest(id).Wait();
+        await _cargoService.TransitCargoRequest(id);
         return RedirectToAction("Index");
     }
 
     [HttpPost]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        _cargoService.DeleteCargoRequest(id).Wait();
+        await _cargoService.DeleteCargoRequest(id);
         return RedirectToAction("Index");
     }
 }

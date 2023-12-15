@@ -16,11 +16,11 @@
     <ProjectReference Include="..\CargoApp.Infrastructure\CargoApp.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
+<!--  <ItemGroup>
     <AdditionalFiles Include="Views\Cargo\Create.cshtml" />
     <AdditionalFiles Include="Views\Cargo\Edit.cshtml" />
     <AdditionalFiles Include="Views\Cargo\Index.cshtml" />
-  </ItemGroup>
+  </ItemGroup>-->
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Views\Home\Index.cshtml" />

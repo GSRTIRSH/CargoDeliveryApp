@@ -5,6 +5,7 @@ using CargoApp.Infrastructure.Persistence;
 using CargoApp.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 
 namespace CargoApp;
 
