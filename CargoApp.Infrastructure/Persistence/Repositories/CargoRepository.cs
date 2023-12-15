@@ -64,14 +64,17 @@ public class CargoRepository : ICargoRepository
             ? StringComparison.InvariantCulture
             : StringComparison.InvariantCultureIgnoreCase;
 
-        // Поиск по всем полям приходится делать в памяти, а не в базе данных, из-за необходимости преобразовывать столбцы 
-        return _context.CargoRequests.ToList()
-            .Where(request =>
-                request.PickupLocation.Contains(searchText, comparison) ||
-                request.DeliveryLocation.Contains(searchText, comparison) ||
-                request.PickupDateTime.ToString("yyyy-MM-dd HH:mm").Contains(searchText, comparison) ||
-                request.Status.GetName().Contains(searchText, comparison) ||
-                request.CancellationReason.Contains(searchText, comparison))
-            .ToList();
+        return await Task.Run(() =>
+        {
+            // Поиск в памяти заменить на LIKE-фильтры 
+            return _context.CargoRequests.ToList()
+                .Where(request =>
+                    request.PickupLocation.Contains(searchText, comparison) ||
+                    request.DeliveryLocation.Contains(searchText, comparison) ||
+                    request.PickupDateTime.ToString("yyyy-MM-dd HH:mm").Contains(searchText, comparison) ||
+                    request.Status.GetName().Contains(searchText, comparison) ||
+                    request.CancellationReason.Contains(searchText, comparison))
+                .ToList();
+        });
     }
 }

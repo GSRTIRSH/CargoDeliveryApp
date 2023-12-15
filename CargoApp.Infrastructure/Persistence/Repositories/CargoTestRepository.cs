@@ -12,38 +12,50 @@ public class CargoTestRepository : ICargoRepository
 
     public async Task<IEnumerable<Cargo>> GetCargoRequestsAsync()
     {
-        return _сargoList;
+        return await Task.Run(() => _сargoList);
     }
 
-    public async Task<Cargo> GetCargoRequestAsync(int id)
+    public Task<Cargo> GetCargoRequestAsync(int id)
     {
-        return _сargoList.Find(c => c.Id == id) ?? throw new ArgumentNullException(id.ToString());
+        return Task.Run(() =>
+        {
+            return _сargoList.Find(c => c.Id == id) ?? throw new ArgumentException(id.ToString());
+        });
     }
 
-    public async Task CreateCargoRequestAsync(Cargo cargoRequest)
+    public Task CreateCargoRequestAsync(Cargo cargoRequest)
     {
-        cargoRequest.Id = _сargoList.LastOrDefault()?.Id + 1 ?? 0;
-        _сargoList.Add(cargoRequest);
+        return Task.Run(() =>
+        {
+            cargoRequest.Id = _сargoList.LastOrDefault()?.Id + 1 ?? 0;
+            _сargoList.Add(cargoRequest);
+        });
     }
 
-    public async Task EditCargoRequestAsync(Cargo cargoRequest)
+    public Task EditCargoRequestAsync(Cargo cargoRequest)
     {
-        var edit = _сargoList.Find(t => t.Id == cargoRequest.Id);
-        if (edit == null) return;
+        return Task.Run(() =>
+        {
+            var edit = _сargoList.Find(t => t.Id == cargoRequest.Id);
+            if (edit == null) return;
 
-        edit.Status = cargoRequest.Status;
-        edit.CancellationReason = cargoRequest.CancellationReason;
-        if (edit.Status != CargoStatus.New) return;
+            edit.Status = cargoRequest.Status;
+            edit.CancellationReason = cargoRequest.CancellationReason;
+            if (edit.Status != CargoStatus.New) return;
 
-        edit.PickupLocation = cargoRequest.PickupLocation;
-        edit.DeliveryLocation = cargoRequest.DeliveryLocation;
-        edit.PickupDateTime = cargoRequest.PickupDateTime;
+            edit.PickupLocation = cargoRequest.PickupLocation;
+            edit.DeliveryLocation = cargoRequest.DeliveryLocation;
+            edit.PickupDateTime = cargoRequest.PickupDateTime;
+        });
     }
 
-    public async Task DeleteCargoRequestAsync(int cargoRequestId)
+    public Task DeleteCargoRequestAsync(int cargoRequestId)
     {
-        var remove = _сargoList.Find(t => t.Id == cargoRequestId);
-        if (remove != null) _сargoList.Remove(remove);
+        return Task.Run(() =>
+        {
+            var remove = _сargoList.Find(t => t.Id == cargoRequestId);
+            if (remove != null) _сargoList.Remove(remove);
+        });
     }
 
     public async Task<IEnumerable<Cargo>> SearchCargoRequestsAsync(string searchText, bool caseSensitive)
@@ -51,14 +63,17 @@ public class CargoTestRepository : ICargoRepository
         var comparison = caseSensitive
             ? StringComparison.CurrentCulture
             : StringComparison.CurrentCultureIgnoreCase;
-        
-        return _сargoList
-            .Where(request =>
-                request.PickupLocation.Contains(searchText, comparison) ||
-                request.DeliveryLocation.Contains(searchText, comparison) ||
-                request.PickupDateTime.ToString("yyyy-MM-dd HH:mm").Contains(searchText, comparison) ||
-                request.Status.GetName().Contains(searchText, comparison) ||
-                request.CancellationReason.Contains(searchText, comparison))
-            .ToList();
+
+        return await Task.Run(() =>
+        {
+            return _сargoList
+                .Where(request =>
+                    request.PickupLocation.Contains(searchText, comparison) ||
+                    request.DeliveryLocation.Contains(searchText, comparison) ||
+                    request.PickupDateTime.ToString("yyyy-MM-dd HH:mm").Contains(searchText, comparison) ||
+                    request.Status.GetName().Contains(searchText, comparison) ||
+                    request.CancellationReason.Contains(searchText, comparison))
+                .ToList();
+        });
     }
 }
